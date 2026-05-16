@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="AI 提示詞優化器，協助使用者為 ChatGPT、DeepSeek、Gemini 等模型精煉提示詞。">
-  <title>AI 提示詞優化器</title>
+  <meta name="description" content="輸入一句提示詞，立即生成三個不同風格、可直接複製使用的 AI 優化提示詞。">
+  <title>AI 提示詞三版優化器</title>
   <style>
     :root {
-      --bg: #f6f7fb;
+      --bg: #f5f7fb;
       --panel: #ffffff;
       --ink: #17202a;
-      --muted: #647084;
-      --line: #dce2ea;
+      --muted: #627084;
+      --line: #dce3ec;
       --accent: #0f766e;
-      --accent-2: #b45309;
-      --accent-soft: #dff5f1;
-      --danger: #b42318;
-      --shadow: 0 16px 40px rgba(23, 32, 42, .08);
+      --accent-dark: #0a4f49;
+      --amber: #b45309;
+      --blue: #2563eb;
+      --soft: #e7f6f3;
+      --shadow: 0 16px 42px rgba(23, 32, 42, .08);
     }
 
     * {
@@ -28,40 +29,39 @@
       font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
       color: var(--ink);
       background:
-        linear-gradient(180deg, rgba(15, 118, 110, .10), rgba(246, 247, 251, 0) 360px),
+        linear-gradient(180deg, rgba(15, 118, 110, .10), rgba(245, 247, 251, 0) 340px),
         var(--bg);
     }
 
     button,
     textarea,
-    input,
-    select {
+    select,
+    input {
       font: inherit;
     }
 
     .hero {
-      min-height: 34vh;
+      min-height: 38vh;
       display: grid;
       align-items: end;
-      padding: 48px 24px 28px;
+      padding: 48px 24px 30px;
       color: #fff;
       background:
-        linear-gradient(90deg, rgba(6, 47, 43, .88), rgba(6, 47, 43, .40)),
+        linear-gradient(90deg, rgba(7, 44, 41, .9), rgba(7, 44, 41, .42)),
         url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80") center/cover;
     }
 
     .hero-inner,
     .workspace,
-    .model-strip,
     .footer {
-      width: min(1180px, 100%);
+      width: min(1160px, 100%);
       margin: 0 auto;
     }
 
     .hero h1 {
       margin: 0 0 12px;
-      max-width: 820px;
-      font-size: clamp(2.2rem, 5vw, 4.8rem);
+      max-width: 860px;
+      font-size: clamp(2.15rem, 5vw, 4.7rem);
       line-height: 1;
       letter-spacing: 0;
     }
@@ -69,41 +69,12 @@
     .hero p {
       max-width: 760px;
       margin: 0;
-      font-size: clamp(1rem, 1.9vw, 1.28rem);
-      line-height: 1.65;
-    }
-
-    .model-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      padding: 18px 24px 0;
-    }
-
-    .model-badge {
-      min-height: 74px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, .82);
-      box-shadow: 0 10px 28px rgba(23, 32, 42, .06);
-    }
-
-    .model-badge strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: .98rem;
-    }
-
-    .model-badge span {
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.45;
+      font-size: clamp(1rem, 1.8vw, 1.24rem);
+      line-height: 1.7;
     }
 
     .workspace {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 390px;
       gap: 20px;
       padding: 24px;
     }
@@ -125,15 +96,23 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .panel-head h2 {
+    h2,
+    h3 {
       margin: 0;
-      font-size: 1.08rem;
+      letter-spacing: 0;
     }
 
-    .panel-head p {
-      margin: 4px 0 0;
+    .panel-head h2 {
+      font-size: 1.12rem;
+    }
+
+    .panel-head p,
+    .hint,
+    .version-meta {
+      margin: 5px 0 0;
       color: var(--muted);
       font-size: .92rem;
+      line-height: 1.5;
     }
 
     .panel-body {
@@ -142,7 +121,7 @@
 
     .prompt-input {
       width: 100%;
-      min-height: 230px;
+      min-height: 148px;
       resize: vertical;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -157,12 +136,12 @@
     select:focus,
     input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, .15);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .14);
     }
 
     .controls {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
       margin-top: 16px;
     }
@@ -197,7 +176,6 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       min-height: 44px;
       border: 1px solid transparent;
       border-radius: 8px;
@@ -212,88 +190,94 @@
       color: var(--ink);
       border-color: var(--line);
       background: #fff;
-      font-weight: 600;
+      font-weight: 650;
     }
 
     .btn.warn {
-      background: var(--accent-2);
+      background: var(--amber);
     }
 
-    .btn:disabled {
-      opacity: .55;
-      cursor: not-allowed;
+    .results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    .output {
-      min-height: 360px;
-      white-space: pre-wrap;
+    .version-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 430px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 16px;
-      background: #0f172a;
-      color: #eef6ff;
-      line-height: 1.7;
-    }
-
-    .side-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .score {
-      display: grid;
-      grid-template-columns: 96px 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .score-ring {
-      width: 96px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      color: var(--accent);
-      background: conic-gradient(var(--accent) var(--score, 0%), #edf1f5 0);
-      font-size: 1.45rem;
-      font-weight: 800;
-      position: relative;
-    }
-
-    .score-ring::after {
-      content: "";
-      position: absolute;
-      inset: 9px;
-      border-radius: 50%;
       background: #fff;
+      overflow: hidden;
     }
 
-    .score-ring span {
-      position: relative;
-      z-index: 1;
+    .version-card.precise {
+      border-top: 5px solid var(--accent);
     }
 
-    .tips {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    .version-card.creative {
+      border-top: 5px solid var(--amber);
     }
 
-    .tips li {
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
+    .version-card.structured {
+      border-top: 5px solid var(--blue);
+    }
+
+    .version-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .version-head h3 {
+      font-size: 1rem;
+    }
+
+    .prompt-result {
+      white-space: pre-wrap;
+      padding: 16px;
+      color: #eef6ff;
+      background: #111827;
+      line-height: 1.65;
+      font-size: .94rem;
+      overflow: auto;
+    }
+
+    .version-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
       background: #fbfcfe;
-      color: var(--muted);
-      line-height: 1.5;
     }
 
-    .tips li.good {
-      color: #116149;
-      background: var(--accent-soft);
-      border-color: #bbe7df;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--accent-dark);
+      background: var(--soft);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      display: grid;
+      min-height: 220px;
+      place-items: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: #fbfcfe;
+      text-align: center;
+      padding: 24px;
+      line-height: 1.65;
     }
 
     .toast {
@@ -318,19 +302,20 @@
     }
 
     .footer {
-      padding: 6px 24px 36px;
+      padding: 0 24px 36px;
       color: var(--muted);
       font-size: .9rem;
+      line-height: 1.5;
     }
 
-    @media (max-width: 940px) {
-      .workspace,
-      .model-strip {
+    @media (max-width: 980px) {
+      .controls,
+      .results {
         grid-template-columns: 1fr;
       }
 
-      .workspace {
-        padding-top: 18px;
+      .version-card {
+        min-height: 0;
       }
     }
 
@@ -340,14 +325,8 @@
         padding: 34px 18px 24px;
       }
 
-      .workspace,
-      .model-strip {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-
-      .controls {
-        grid-template-columns: 1fr;
+      .workspace {
+        padding: 18px 16px 24px;
       }
 
       .panel-head {
@@ -360,42 +339,35 @@
 <body>
   <header class="hero">
     <div class="hero-inner">
-      <h1>AI 提示詞優化器</h1>
-      <p>為 ChatGPT、DeepSeek、Gemini 等語言模型精煉提示詞，讓 AI 更準確理解需求，輸出更可用、更完整、更貼近目標的結果。</p>
+      <h1>AI 提示詞三版優化器</h1>
+      <p>輸入一句普通提示詞，立即改寫成三個不同風格的高品質版本。每一版都能直接複製到 ChatGPT、DeepSeek、Gemini 或其他 AI 模型使用。</p>
     </div>
   </header>
-
-  <section class="model-strip" aria-label="支援模型">
-    <div class="model-badge"><strong>ChatGPT</strong><span>適合清楚角色、任務、格式與限制條件。</span></div>
-    <div class="model-badge"><strong>DeepSeek</strong><span>強化推理步驟、程式分析與問題拆解。</span></div>
-    <div class="model-badge"><strong>Gemini</strong><span>補足多模態、長上下文與資料整理場景。</span></div>
-    <div class="model-badge"><strong>通用 LLM</strong><span>產生可跨模型使用的結構化提示詞。</span></div>
-  </section>
 
   <main class="workspace">
     <section class="panel">
       <div class="panel-head">
         <div>
-          <h2>輸入原始提示詞</h2>
-          <p>貼上你的初稿，選擇模型與任務目標。</p>
+          <h2>輸入一句提示詞</h2>
+          <p>不用寫得完美，先把想法丟進來，我會幫你整理成三種可用版本。</p>
         </div>
         <button class="btn secondary" id="sampleBtn" type="button">載入範例</button>
       </div>
       <div class="panel-body">
-        <textarea id="sourcePrompt" class="prompt-input" placeholder="例如：幫我寫一份關於環保的文章，要有吸引力。"></textarea>
+        <textarea id="sourcePrompt" class="prompt-input" placeholder="例如：幫我寫一篇關於 AI 學習工具的文章，要吸引學生。"></textarea>
         <div class="controls">
           <label>
             目標模型
             <select id="model">
+              <option value="通用 AI 模型">通用 AI 模型</option>
               <option value="ChatGPT">ChatGPT</option>
               <option value="DeepSeek">DeepSeek</option>
               <option value="Gemini">Gemini</option>
               <option value="Claude">Claude</option>
-              <option value="通用 LLM">通用 LLM</option>
             </select>
           </label>
           <label>
-            任務類型
+            用途
             <select id="task">
               <option value="寫作與改寫">寫作與改寫</option>
               <option value="教學設計">教學設計</option>
@@ -415,83 +387,34 @@
             </select>
           </label>
           <label>
-            詳細程度
-            <select id="depth">
-              <option value="精簡但完整">精簡但完整</option>
-              <option value="標準">標準</option>
-              <option value="深入詳細">深入詳細</option>
-              <option value="可直接交付">可直接交付</option>
-            </select>
-          </label>
-          <label>
-            語氣
-            <select id="tone">
-              <option value="專業清晰">專業清晰</option>
-              <option value="自然親切">自然親切</option>
-              <option value="學術嚴謹">學術嚴謹</option>
-              <option value="具說服力">具說服力</option>
-            </select>
-          </label>
-          <label>
             必須包含
-            <input id="mustHave" type="text" placeholder="例如：表格、步驟、引用來源">
+            <input id="mustHave" type="text" placeholder="例如：表格、步驟、例子">
           </label>
         </div>
         <div class="actions">
-          <button class="btn" id="optimizeBtn" type="button">優化提示詞</button>
-          <button class="btn secondary" id="copyBtn" type="button">複製結果</button>
+          <button class="btn" id="optimizeBtn" type="button">生成 3 個版本</button>
           <button class="btn warn" id="clearBtn" type="button">清空</button>
         </div>
       </div>
     </section>
 
-    <aside class="side-grid">
-      <section class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>提示詞品質</h2>
-            <p>依清晰度、背景、格式與限制評估。</p>
-          </div>
-        </div>
-        <div class="panel-body score">
-          <div class="score-ring" id="scoreRing" style="--score: 0%"><span id="scoreValue">0</span></div>
-          <div>
-            <strong id="scoreTitle">等待輸入</strong>
-            <p id="scoreText">輸入提示詞後會顯示可改善重點。</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>診斷建議</h2>
-            <p>找出 AI 可能誤解的地方。</p>
-          </div>
-        </div>
-        <div class="panel-body">
-          <ul class="tips" id="tipsList">
-            <li>請先輸入原始提示詞。</li>
-          </ul>
-        </div>
-      </section>
-    </aside>
-
-    <section class="panel" style="grid-column: 1 / -1;">
+    <section class="panel">
       <div class="panel-head">
         <div>
-          <h2>優化後提示詞</h2>
-          <p>可直接複製到目標 AI 模型中使用。</p>
+          <h2>三個可直接複製的版本</h2>
+          <p>每個版本都針對不同使用情境：精準、創意、結構化。</p>
         </div>
       </div>
       <div class="panel-body">
-        <div id="output" class="output" aria-live="polite">優化結果會顯示在這裡。</div>
+        <div class="results" id="results" aria-live="polite">
+          <div class="empty">生成後會在這裡出現三個版本。<br>你可以挑最合適的一版直接複製使用。</div>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    本工具在瀏覽器中即時整理文字，不會上傳你的提示詞內容。
+    本工具在瀏覽器中即時改寫提示詞，不會上傳你的內容。
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -501,150 +424,115 @@
     const model = document.querySelector("#model");
     const task = document.querySelector("#task");
     const language = document.querySelector("#language");
-    const depth = document.querySelector("#depth");
-    const tone = document.querySelector("#tone");
     const mustHave = document.querySelector("#mustHave");
-    const output = document.querySelector("#output");
-    const scoreRing = document.querySelector("#scoreRing");
-    const scoreValue = document.querySelector("#scoreValue");
-    const scoreTitle = document.querySelector("#scoreTitle");
-    const scoreText = document.querySelector("#scoreText");
-    const tipsList = document.querySelector("#tipsList");
+    const results = document.querySelector("#results");
     const toast = document.querySelector("#toast");
 
-    const modelGuidance = {
-      ChatGPT: "請明確扮演專家角色，先確認需求，再用條列、表格或段落輸出可直接使用的內容。",
-      DeepSeek: "請強化邏輯拆解、推理步驟、邊界條件與驗證方式，必要時指出假設。",
-      Gemini: "請善用長上下文整理能力，整合背景、限制、目標受眾與輸出格式。",
-      Claude: "請維持清楚、完整、低誤解的指令結構，對不確定資訊提出澄清問題。",
-      "通用 LLM": "請使用跨模型穩定的結構：角色、任務、背景、限制、輸出格式、檢查標準。"
-    };
-
-    const checks = [
-      { key: "role", test: text => /你是|扮演|角色|專家|act as/i.test(text), tip: "加入明確角色，例如：你是一位資深教學設計師。" },
-      { key: "goal", test: text => /目標|目的|希望|請|幫我|產出|生成/.test(text), tip: "說明最終目標，避免只描述主題。" },
-      { key: "context", test: text => /背景|對象|受眾|情境|資料|限制/.test(text), tip: "補充背景、使用對象、情境或必要資料。" },
-      { key: "format", test: text => /格式|表格|條列|步驟|JSON|Markdown|段落/.test(text), tip: "指定輸出格式，例如表格、步驟、Markdown 或 JSON。" },
-      { key: "criteria", test: text => /標準|避免|必須|不要|包含|限制|字數/.test(text), tip: "加入限制與評估標準，例如字數、語氣、必須包含與避免事項。" }
+    const variants = [
+      {
+        key: "precise",
+        title: "版本一：專業精準版",
+        badge: "清楚、穩定、少誤解",
+        intro: "你是一位專業且細心的 AI 助手。請根據我的需求，產出清楚、準確、可直接使用的內容。",
+        style: "語氣要專業清晰，避免空泛描述。若資訊不足，請先列出必要假設，再完成任務。"
+      },
+      {
+        key: "creative",
+        title: "版本二：創意發散版",
+        badge: "有新意、有角度",
+        intro: "你是一位有創意的內容策略顧問。請從多個角度理解我的需求，提出更吸引人、更有想像力的答案。",
+        style: "請保留實用性，同時加入具體例子、亮點設計或更有感染力的表達。"
+      },
+      {
+        key: "structured",
+        title: "版本三：結構化執行版",
+        badge: "步驟、格式、可落地",
+        intro: "你是一位擅長拆解任務的執行型專家。請把我的需求整理成有步驟、有格式、容易檢查的輸出。",
+        style: "請使用清楚標題、條列步驟、表格或檢查清單，讓結果能直接拿去執行。"
+      }
     ];
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1800);
+      window.setTimeout(() => toast.classList.remove("show"), 1700);
     }
 
-    function diagnose(text) {
-      const trimmed = text.trim();
-      if (!trimmed) {
-        return { score: 0, passed: [], missing: checks };
-      }
-      const passed = checks.filter(item => item.test(trimmed));
-      const missing = checks.filter(item => !item.test(trimmed));
-      const lengthScore = Math.min(25, Math.floor(trimmed.length / 8));
-      const score = Math.min(100, Math.round((passed.length / checks.length) * 75 + lengthScore));
-      return { score, passed, missing };
+    function buildPrompt(variant, raw) {
+      const extra = mustHave.value.trim();
+      const modelLine = model.value === "通用 AI 模型"
+        ? "請使用適合大多數語言模型的穩定提示詞格式。"
+        : `請優先適配 ${model.value} 的回答特性。`;
+
+      return [
+        variant.intro,
+        "",
+        "【我的原始需求】",
+        raw,
+        "",
+        "【任務設定】",
+        `- 用途：${task.value}`,
+        `- 輸出語言：${language.value}`,
+        `- 模型適配：${modelLine}`,
+        extra ? `- 必須包含：${extra}` : "- 必須包含：明確結論、具體內容、可執行建議",
+        "",
+        "【回答要求】",
+        `- ${variant.style}`,
+        "- 不要只給籠統建議，要給可以直接使用或修改的完整內容。",
+        "- 如果需要補充背景，請用最少的問題指出缺少哪些資訊。",
+        "- 最後請附上簡短檢查，確認答案是否符合我的需求。"
+      ].join("\n");
     }
 
-    function renderDiagnosis() {
-      const result = diagnose(sourcePrompt.value);
-      scoreRing.style.setProperty("--score", `${result.score}%`);
-      scoreValue.textContent = result.score;
-
-      if (result.score === 0) {
-        scoreTitle.textContent = "等待輸入";
-        scoreText.textContent = "輸入提示詞後會顯示可改善重點。";
-      } else if (result.score >= 80) {
-        scoreTitle.textContent = "結構完整";
-        scoreText.textContent = "提示詞已具備多數關鍵元素，可再微調輸出限制。";
-      } else if (result.score >= 55) {
-        scoreTitle.textContent = "可再精煉";
-        scoreText.textContent = "已能表達需求，但仍有部分資訊容易讓 AI 猜測。";
-      } else {
-        scoreTitle.textContent = "需要補強";
-        scoreText.textContent = "建議補上角色、背景、格式與成功標準。";
-      }
-
-      tipsList.innerHTML = "";
-      if (!sourcePrompt.value.trim()) {
-        tipsList.innerHTML = "<li>請先輸入原始提示詞。</li>";
-        return;
-      }
-
-      result.passed.forEach(item => {
-        const li = document.createElement("li");
-        li.className = "good";
-        li.textContent = `已包含：${item.key}`;
-        tipsList.appendChild(li);
-      });
-
-      result.missing.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = item.tip;
-        tipsList.appendChild(li);
-      });
-    }
-
-    function optimizePrompt() {
+    function renderResults() {
       const raw = sourcePrompt.value.trim();
       if (!raw) {
-        showToast("請先輸入要優化的提示詞");
+        showToast("請先輸入一句提示詞");
         sourcePrompt.focus();
         return;
       }
 
-      const extra = mustHave.value.trim();
-      const result = [
-        `你是熟悉 ${model.value} 的資深提示詞工程師，請依照以下要求完成任務。`,
-        "",
-        "【任務目標】",
-        `針對「${task.value}」場景，根據使用者提供的原始需求，產生高品質、可直接執行的輸出。`,
-        "",
-        "【原始需求】",
-        raw,
-        "",
-        "【模型適配策略】",
-        modelGuidance[model.value],
-        "",
-        "【輸出要求】",
-        `1. 使用${language.value}輸出。`,
-        `2. 語氣保持${tone.value}。`,
-        `3. 詳細程度為「${depth.value}」。`,
-        "4. 先釐清任務重點，再給出結構化答案。",
-        "5. 如資訊不足，先列出最重要的澄清問題；若可合理假設，請明確標示假設。",
-        "6. 避免空泛建議，內容要具體、可操作、可檢查。",
-        extra ? `7. 必須包含：${extra}。` : "7. 必須包含清楚標題、重點整理與下一步建議。",
-        "",
-        "【品質檢查】",
-        "- 是否完整回應原始需求",
-        "- 是否避免模糊詞與未說明假設",
-        "- 是否符合指定格式、語氣與語言",
-        "- 是否讓使用者能直接採用或修改"
-      ].join("\n");
+      results.innerHTML = "";
+      variants.forEach((variant, index) => {
+        const prompt = buildPrompt(variant, raw);
+        const card = document.createElement("article");
+        card.className = `version-card ${variant.key}`;
+        card.innerHTML = `
+          <div class="version-head">
+            <h3>${variant.title}</h3>
+            <p class="version-meta">${variant.badge}</p>
+          </div>
+          <div class="prompt-result" id="result-${index}"></div>
+          <div class="version-actions">
+            <span class="badge">${model.value}</span>
+            <button class="btn secondary" type="button" data-copy="${index}">複製這版</button>
+          </div>
+        `;
+        results.appendChild(card);
+        card.querySelector(`#result-${index}`).textContent = prompt;
+      });
 
-      output.textContent = result;
-      renderDiagnosis();
-      showToast("已產生優化提示詞");
+      showToast("已生成 3 個版本");
     }
 
-    document.querySelector("#optimizeBtn").addEventListener("click", optimizePrompt);
-    sourcePrompt.addEventListener("input", renderDiagnosis);
+    async function copyVersion(index) {
+      const target = document.querySelector(`#result-${index}`);
+      if (!target) return;
+      await navigator.clipboard.writeText(target.textContent);
+      showToast(`已複製版本 ${Number(index) + 1}`);
+    }
 
-    document.querySelector("#copyBtn").addEventListener("click", async () => {
-      const text = output.textContent.trim();
-      if (!text || text === "優化結果會顯示在這裡。") {
-        showToast("目前沒有可複製的結果");
-        return;
-      }
-      await navigator.clipboard.writeText(text);
-      showToast("已複製到剪貼簿");
+    document.querySelector("#optimizeBtn").addEventListener("click", renderResults);
+
+    results.addEventListener("click", event => {
+      const button = event.target.closest("[data-copy]");
+      if (button) copyVersion(button.dataset.copy);
     });
 
     document.querySelector("#clearBtn").addEventListener("click", () => {
       sourcePrompt.value = "";
       mustHave.value = "";
-      output.textContent = "優化結果會顯示在這裡。";
-      renderDiagnosis();
+      results.innerHTML = '<div class="empty">生成後會在這裡出現三個版本。<br>你可以挑最合適的一版直接複製使用。</div>';
       showToast("已清空");
     });
 
@@ -653,14 +541,9 @@
       model.value = "ChatGPT";
       task.value = "教學設計";
       language.value = "繁體中文";
-      tone.value = "專業清晰";
-      depth.value = "可直接交付";
-      mustHave.value = "教學流程表、活動步驟、評量方式";
-      renderDiagnosis();
-      optimizePrompt();
+      mustHave.value = "教學流程、討論問題、評量方式";
+      renderResults();
     });
-
-    renderDiagnosis();
   </script>
 </body>
 </html>
