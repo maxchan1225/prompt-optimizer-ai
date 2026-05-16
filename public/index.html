@@ -351,10 +351,9 @@
           <h2>輸入一句提示詞</h2>
           <p>不用寫得完美，先把想法丟進來，我會幫你整理成三種可用版本。</p>
         </div>
-        <button class="btn secondary" id="sampleBtn" type="button">載入範例</button>
       </div>
       <div class="panel-body">
-        <textarea id="sourcePrompt" class="prompt-input" placeholder="例如：幫我寫一篇關於 AI 學習工具的文章，要吸引學生。"></textarea>
+        <textarea id="sourcePrompt" class="prompt-input" placeholder="輸入你想優化的提示詞"></textarea>
         <div class="controls">
           <label>
             目標模型
@@ -388,7 +387,7 @@
           </label>
           <label>
             必須包含
-            <input id="mustHave" type="text" placeholder="例如：表格、步驟、例子">
+            <input id="mustHave" type="text" placeholder="輸入必須包含的內容">
           </label>
         </div>
         <div class="actions">
@@ -433,22 +432,19 @@
         key: "precise",
         title: "版本一：專業精準版",
         badge: "清楚、穩定、少誤解",
-        intro: "你是一位專業且細心的 AI 助手。請根據我的需求，產出清楚、準確、可直接使用的內容。",
-        style: "語氣要專業清晰，避免空泛描述。若資訊不足，請先列出必要假設，再完成任務。"
+        style: "請用專業、清楚、自然的語氣完成，內容要準確、完整、可直接使用，避免空泛描述。"
       },
       {
         key: "creative",
         title: "版本二：創意發散版",
         badge: "有新意、有角度",
-        intro: "你是一位有創意的內容策略顧問。請從多個角度理解我的需求，提出更吸引人、更有想像力的答案。",
-        style: "請保留實用性，同時加入具體例子、亮點設計或更有感染力的表達。"
+        style: "請用更有吸引力和創意的方式完成，保留實用性，同時加入具體例子、亮點設計或更有感染力的表達。"
       },
       {
         key: "structured",
         title: "版本三：結構化執行版",
         badge: "步驟、格式、可落地",
-        intro: "你是一位擅長拆解任務的執行型專家。請把我的需求整理成有步驟、有格式、容易檢查的輸出。",
-        style: "請使用清楚標題、條列步驟、表格或檢查清單，讓結果能直接拿去執行。"
+        style: "請用結構化方式完成，包含清楚標題、條列重點、必要步驟和檢查清單，讓結果能直接拿去執行。"
       }
     ];
 
@@ -460,28 +456,16 @@
 
     function buildPrompt(variant, raw) {
       const extra = mustHave.value.trim();
-      const modelLine = model.value === "通用 AI 模型"
-        ? "請使用適合大多數語言模型的穩定提示詞格式。"
-        : `請優先適配 ${model.value} 的回答特性。`;
+      const cleanRaw = raw.replace(/\s+/g, " ").trim();
+      const languageLine = language.value ? `請使用${language.value}。` : "";
+      const modelLine = model.value === "通用 AI 模型" ? "" : `請讓回答適合 ${model.value} 使用。`;
+      const extraLine = extra ? `內容必須包含：${extra}。` : "";
 
       return [
-        variant.intro,
-        "",
-        "【我的原始需求】",
-        raw,
-        "",
-        "【任務設定】",
-        `- 用途：${task.value}`,
-        `- 輸出語言：${language.value}`,
-        `- 模型適配：${modelLine}`,
-        extra ? `- 必須包含：${extra}` : "- 必須包含：明確結論、具體內容、可執行建議",
-        "",
-        "【回答要求】",
-        `- ${variant.style}`,
-        "- 不要只給籠統建議，要給可以直接使用或修改的完整內容。",
-        "- 如果需要補充背景，請用最少的問題指出缺少哪些資訊。",
-        "- 最後請附上簡短檢查，確認答案是否符合我的需求。"
-      ].join("\n");
+        `請協助我完成這個${task.value}任務：${cleanRaw}`,
+        `${languageLine}${modelLine}${extraLine}`,
+        `${variant.style}如果資料不足，請根據常見情境作合理假設，不要先問太多問題。`
+      ].filter(Boolean).join("\n\n");
     }
 
     function renderResults() {
@@ -536,14 +520,6 @@
       showToast("已清空");
     });
 
-    document.querySelector("#sampleBtn").addEventListener("click", () => {
-      sourcePrompt.value = "幫我設計一堂 45 分鐘的高中英文課，主題是 AI 對未來工作的影響，希望學生能討論並完成一份短講稿。";
-      model.value = "ChatGPT";
-      task.value = "教學設計";
-      language.value = "繁體中文";
-      mustHave.value = "教學流程、討論問題、評量方式";
-      renderResults();
-    });
   </script>
 </body>
 </html>
