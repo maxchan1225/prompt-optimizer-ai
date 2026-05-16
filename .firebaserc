@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "teacherstudy-ac70b"
+  },
+  "targets": {
+    "teacherstudy-ac70b": {
+      "hosting": {
+        "prompt-optimizer": [
+          "teacherstudy-ac70b-prompt-optimizer"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
